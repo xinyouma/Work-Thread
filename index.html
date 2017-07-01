@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head class="header" role="banner">
+	<meta charset="UTF-8">
+	<title> Work Thread </title>
+	<link rel="stylesheet" type="text/css" href="mystyle.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script type="text/javascript" src="js/try.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
+		<script type="text/javascript" src="js/tryangular.js"></script>
+		<script>
+			var WT = {
+				username: 'defualt_user',
+				time : [],
+				project : [],
+				inewbox : [],
+				status : "empty"
+			}
+			WT.time = {
+				create : new String(),
+				laste_visit: new String()
+			}
+			for(var i=0; i<1; i++) {
+				WT.project[i] = new Array(1);
+				WT.inewbox[i]=1;
+			}
+			var temp_obj = new Object();
+
+		</script>
+
+
+</head>
+
+<body onload="load_from_localStorage()">
+	<div class="container activity page-mywork" id="page">
+		<!-- The Modal -->
+		<div id="myModal" class="modal">
+
+	  	<!-- Modal content -->
+	  	<div class="modal-content" id="modal-content">
+				<div id="drop_in"></div>
+	    	<span class="close">&times;</span>
+	    	<p style="font-family:Verdana"><span>Drop file here<br></span>or<br>Select file</p>
+				<img src="pics/upload.png"></img>
+
+				<div id="buttons">
+						<div id="choose_file">Choose File</div>
+						<!--div id="upload_file">Upload File</div-->
+						<input type="file" id ="upload_i" style="display: none" onchange="onChange(event)">
+						<input class="showhistory" style="display:none">
+
+						<script>
+						var fff = [];
+						var kkk = [];
+						var reader = [];
+						var file_choose = document.getElementById("upload_i");
+						//console.dir(file_choose);
+
+						/*file_choose.addEventListener("change", handleFiles,false);
+							function handleFiles(evt) {
+								fff = this.files;
+								alert("The value of the input field was changed.");
+								console.dir(fff);
+								console.dir(evt);
+							}*/
+
+							function onChange(event) {
+									update_status('loading');
+	  							var f = event.target.files[0];
+									var output = [];
+	      							output.push('<li><strong>', escape(f.name), '</strong> (', f.type || 'n/a', ') - ',
+	                		f.size, ' bytes, last modified: ',
+	                		f.lastModifiedDate ? f.lastModifiedDate.toLocaleDateString() : 'n/a',
+	                		'</li>');
+	  							reader = new FileReader();
+	  							reader.onload = function(event) {
+	    								// The file's text will be printed here
+	    								//console.log(event.target.result)
+											kkk = JSON.parse(event.target.result);
+	  							};
+	  							reader.readAsText(f);
+									console.dir(kkk);
+									document.getElementById('list').innerHTML = '<ul>' + output.join('') + '</ul>';
+							}
+
+						function handleFileSelect(evt) {
+								update_status('loading');
+    						evt.stopPropagation();
+    						evt.preventDefault();
+								console.dir(evt);
+
+    						var files = evt.dataTransfer.files; // FileList object.
+								console.dir(files);
+
+    						// files is a FileList of File objects. List some properties.
+    						var output = [];
+    						for (var i = 0, f; f = files[i]; i++) {
+      							output.push('<li><strong>', escape(f.name), '</strong> (', f.type || 'n/a', ') - ',
+                		f.size, ' bytes, last modified: ',
+                		f.lastModifiedDate ? f.lastModifiedDate.toLocaleDateString() : 'n/a',
+                		'</li>');
+    						}
+								f = files[0];
+								fff = f;
+								reader = new FileReader();
+								reader.onload = function(event) {
+        						//window.open(reader.result);
+										kkk = JSON.parse(event.target.result);
+      					}
+								reader.readAsText(f);
+    						document.getElementById('list').innerHTML = '<ul>' + output.join('') + '</ul>';
+								var d = document.getElementsByClassName('close');
+								d[0].className = d[0].className + ' exit_n_read';
+								console.dir(d);
+								fff = d;
+						}
+
+						function handleDragOver(evt) {
+								update_status('loading');
+								evt.stopPropagation();
+								evt.preventDefault();
+								evt.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
+						}
+
+  					// Setup the dnd listeners.
+  					var dropZone = document.getElementById('modal-content');
+  					dropZone.addEventListener('dragover', handleDragOver, false);
+  					dropZone.addEventListener('drop', handleFileSelect, false);
+
+					</script>
+				</div>
+				<output id="list"></output>
+
+	  	</div>
+
+		</div>
+		<!-- Top menu -->
+		<div id="top_menu" class="top_heading">
+			<div class="-container">
+			<div class="column_top">
+				<div class="logobox1">
+						<!--img class="rotate"  src="pics/Logo_small.png" -->
+				</div>
+				<div class="logobox2">
+						<img src="pics/Logo_workthread.png">
+				</div>
+				<div id='save_json'>Download<br>Progress</div>
+				<div type="file" id="load_json">Upload<br>Progress</div>
+				<div id="select_json">Clear All</br>Progress</div>
+				<div id="show_bar">
+					<span id="show_user"></span><br>
+					<span id="show_status"></span>
+				</div>
+			</div>
+			</div>
+		</div>
+		<!-- Top menu end -->
+		<div id="lower_panel" class="block2">
+    		<!--div id="left_panel"></div-->
+        <div id="right_panel">
+        			<div id="say_sth">
+              </div>
+							<div class="board">
+            		    <!--div class="colunm_sep"></div-->
+										<!--one colunm-->
+										<div class="colunm" id="100" style="">
+											<div class="title_bar" id="100">
+						    				<input class="title_bar_input" type="text" id="100" value="Add Project Name" style="outline:none" maxlength="20" disabled>
+				     						<div class="edit_title_bar" id="100" >
+													<img class="edit_title_bar_pencil" id="100" src='pics/pencil.png'></img>
+												</div>
+					    				</div>
+						    			<div class="horizontal_add" id="100">
+                		    <p class="addplus" id="100"> + </p>
+												<p class="delstar" id="100"> &#8251; </p>
+		            			</div>
+										</div>
+										<!--one colunm end-->
+										<div class="blank" >
+											<div class="horizontal_add2 blankcontent"><p class="addstar" id="000"> + </p></div>
+											<div class="horizontal_del2 blankcontent"><p class="delstar" id="-000"> &#8251; </p></div>
+										</div>
+		          </div>
+				</div>
+		</div>
+	</div>
+
+</body>
+<footer>
+	<script type="text/javascript">
+	for (i=0; i <1; i++) {
+			WT.project[i][0] = {
+				title : $('#' + ((i+1)*100) + '.title_bar_input').prop("value"),
+				progress : 0,
+				active : 1,
+				time: []
+		}
+		WT.project[i][0].time = {
+			create : Date(),
+			laste_visit: Date()
+		}
+			/*alert('init done for '+ (i+1) +'th project');
+			alert($('#' + ((i+1)*100) + '.title_bar_input').prop("value"));*/
+	}
+
+
+	function prog_in(textin,proj,stepnum,box_id,date,active){
+		this.project = proj;
+		this.text = textin;
+		this.step = stepnum;
+		this.date = date;
+		this.boxid = box_id;
+		this.active = active;
+		this.priority = 0;
+	}
+
+	function new_progress(proj,stepnum,box_id,date){
+		active = Boolean(1);
+		current_progress = new prog_in('',proj,stepnum,box_id,date,active);
+		WT.project[proj].push(current_progress);
+		WT.project[proj][0].progress += 1;
+		localStorage.setItem("WorkThread_workspace",JSON.stringify(WT));
+		WT.time.laste_visit = date;
+		WT.project[proj][0].time.laste_visit = date;
+	}
+
+	function high_prior(proj,stepnum,box_id,date,status){
+			var temp_box = WT.project[proj][stepnum];
+			if(status == 1){
+				temp_box.priority += 1;
+				WT.status = "alarm";
+			}
+			else{
+				if(status == 0){
+					temp_box.priority -= 1;
+					WT.status = "normal";
+				}
+			}
+			WT.time.laste_visit = date;
+			WT.project[proj][0].time.laste_visit = date;
+			localStorage.setItem("WorkThread_workspace",JSON.stringify(WT));
+	}
+
+	function new_project(proj,date){
+			var temp_proj = new Array(1);
+			temp_proj[0] = {
+					title : $('#' + (proj*100) + '.title_bar_input').prop("value"),
+					progress : 0,
+					active: 1,
+					time: []
+			}
+			temp_proj.time = {
+				create :	Date(),
+				laste_visit:	Date()
+			}
+			WT.inewbox.push(1);
+			WT.project.push(temp_proj);
+			localStorage.setItem("WorkThread_workspace",JSON.stringify(WT));
+			WT.time.laste_visit = date;
+	}
+
+	function update_progress(textin,proj,stepnum,box_id,date,active){
+		current_progress = new prog_in(textin,proj,stepnum,box_id,date,active);
+		WT.project[proj][stepnum] = current_progress;
+		if (!active){
+			WT.project[proj][0].progress -= 1;
+		}
+		localStorage.setItem("WorkThread_workspace",JSON.stringify(WT));
+		WT.time.laste_visit = date;
+		WT.project[proj][0].time.laste_visit = date;
+	}
+
+	function update_title(textin,proj){
+		WT.project[proj][0].title = textin;
+		localStorage.setItem("WorkThread_workspace",JSON.stringify(WT));
+		WT.time.laste_visit = date;
+		WT.project[proj][0].time.laste_visit = date;
+	}
+
+	function update_status(status){
+			WT.status = status;
+			console.log(status);
+			var color = 'white';
+			switch (WT.status) {
+				case 'normal':
+					color = 'white';
+					break;
+				case 'loading':
+					color = 'yellow';
+					break;
+				case 'alarm':
+					color = 'red';
+					break;
+				case 'delete':
+					console.log('lolol');
+					color = 'pink';
+					break;
+				case 'empty':
+					color = 'blue';
+					break;
+				case 'create':
+					color = 'green';
+					break;
+				default:
+					color = 'white';
+			}
+			document.getElementById("show_status").innerHTML =
+			'STATUS: <span style="font-family: Serif; color:' + color + ' ">' + WT.status + '</span>';
+			//localStorage.setItem("WorkThread_workspace",JSON.stringify(WT));
+	}
+
+	function del_project(proj,date){
+			WT.project[proj][0].active = 0;
+			WT.time.laste_visit = date;
+			WT.project[proj][0].time.laste_visit = date;
+			localStorage.setItem("WorkThread_workspace",JSON.stringify(WT));
+	}
+
+	function saveText(text, filename){
+	  var a = document.createElement('a');
+	  a.setAttribute('href', 'data:text/plain;charset=utf-u,'+encodeURIComponent(text));
+	  a.setAttribute('download', filename);
+	  a.click()
+	}
+
+			function load_from_localStorage(){
+					console.log('in load_from_localStorage');
+					update_status('loading');
+					var person = WT.username;
+					if (localStorage.getItem("WorkThread_workspace") != null) {
+						kkk = JSON.parse(localStorage.getItem("WorkThread_workspace"));
+
+						var temp_obj = document.getElementsByClassName('showhistory')[0];
+						//console.log('here');
+						//console.dir(kkk);
+						setTimeout(function(){
+								temp_obj.click();
+							}
+							,100);
+							update_status("normal");
+						//console.log('there');
+						person = kkk.username;
+					} else {
+						WT.time.create=Date();
+						alert('Welcom to Work Thread');
+						person = prompt("Please enter a prefered username", "");
+						console.log('person = ' + person);
+						if (person != "" && person != "") {
+								WT.username = person;
+						} else {
+								WT.username = 'defualt_user';
+						}
+
+					}
+					document.getElementById("show_user").innerHTML =
+					'USER: <span style="font-family: Serif; color: white">' + person + '</span>';
+					update_status('normal');
+					console.log('out load_from_localStorage');
+			}
+
+			function download(text, name, typein) {
+			var a = document.createElement("a");
+			var file = new Blob([text], {type: typein});
+			a.href = URL.createObjectURL(file);
+			a.download = name;
+			a.click();
+			}
+
+
+	</script>
+
+	<!--script type="text/javascript" src="C:\Users\xinyo\Downloads\kkk.json"></script-->
+</footer>
+
+</html>
